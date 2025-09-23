@@ -1,0 +1,18 @@
+{
+	"node": "n8n-nodes-sms8io.Sms8Io",
+	"nodeVersion": "1.0.0",
+	"codex": {
+		"categories": ["Communication"],
+		"subcategories": {
+			"Communication": ["SMS & Chat"]
+		},
+		"resources": {
+			"primaryDocumentation": [
+				{
+					"url": "https://sms8.io/sms8-api-documentation/"
+				}
+			]
+		},
+		"alias": ["SMS", "Text", "SMS8", "Android", "Gateway"]
+	}
+}
