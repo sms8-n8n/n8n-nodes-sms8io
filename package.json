@@ -1,0 +1,60 @@
+{
+  "name": "n8n-nodes-sms8io",
+  "version": "1.0.0",
+  "description": "n8n community node for SMS8.io Android SMS Gateway",
+  "keywords": [
+    "n8n-community-node-package",
+    "sms",
+    "sms8",
+    "sms8.io",
+    "android",
+    "gateway",
+    "text-messages",
+    "automation"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/your-username/n8n-nodes-sms8io",
+  "author": {
+    "name": "Your Name",
+    "email": "your.email@example.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/n8n-nodes-sms8io.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && gulp build:icons",
+    "dev": "tsc --watch",
+    "lint": "eslint nodes credentials --ext .ts",
+    "format": "prettier --write nodes credentials",
+    "prepublishOnly": "npm run build && npm run lint"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/Sms8IoApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Sms8Io/Sms8Io.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^18.16.1",
+    "@typescript-eslint/parser": "^5.45.0",
+    "eslint": "^8.45.0",
+    "gulp": "^4.0.2",
+    "n8n-workflow": "^1.0.0",
+    "prettier": "^2.8.8",
+    "typescript": "^5.1.6"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}
