@@ -1,7 +1,7 @@
 {
   "name": "n8n-nodes-sms8io",
-  "version": "1.0.0",
-  "description": "n8n community node for SMS8.io Android SMS Gateway",
+  "version": "1.1.0",
+  "description": "Official n8n community node for SMS8.io Android SMS Gateway",
   "keywords": [
     "n8n-community-node-package",
     "sms",
@@ -10,17 +10,23 @@
     "android",
     "gateway",
     "text-messages",
-    "automation"
+    "automation",
+    "morocco",
+    "mena"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/your-username/n8n-nodes-sms8io",
+  "homepage": "https://github.com/sms8-n8n/n8n-nodes-sms8io",
   "author": {
-    "name": "Your Name",
-    "email": "your.email@example.com"
+    "name": "SMS8 Team",
+    "email": "support@sms8.io",
+    "url": "https://sms8.io"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/n8n-nodes-sms8io.git"
+    "url": "https://github.com/sms8-n8n/n8n-nodes-sms8io.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sms8-n8n/n8n-nodes-sms8io/issues"
   },
   "engines": {
     "node": ">=18.0.0"
