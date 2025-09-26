@@ -1,6 +1,6 @@
 {
     "node": "n8n-nodes-sms8io.Sms8Io",
-    "nodeVersion": "1.0.0",
+    "nodeVersion": "1.1.0",
     "codex": {
         "categories": ["Communication"],
         "subcategories": {
@@ -9,10 +9,40 @@
         "resources": {
             "primaryDocumentation": [
                 {
-                    "url": "https://sms8.io/sms8-api-documentation/"
+                    "url": "https://sms8.io/sms8-api-documentation/",
+                    "title": "SMS8.io API Documentation"
+                }
+            ],
+            "credentialDocumentation": [
+                {
+                    "url": "https://sms8.io/dashboard",
+                    "title": "Get Your API Key"
+                }
+            ],
+            "generic": [
+                {
+                    "label": "Setup Guide",
+                    "icon": "📱",
+                    "url": "https://github.com/sms8-n8n/n8n-nodes-sms8io/blob/main/README.md"
+                },
+                {
+                    "label": "SMS8.io Website",
+                    "icon": "🌐",
+                    "url": "https://sms8.io"
                 }
             ]
         },
-        "alias": ["SMS", "Text Messages", "SMS8", "Android Gateway", "Morocco"]
+        "alias": [
+            "SMS", 
+            "Text Messages", 
+            "SMS8", 
+            "Android Gateway", 
+            "Morocco", 
+            "MENA",
+            "Mobile Messaging",
+            "Bulk SMS",
+            "SMS Gateway",
+            "Android SMS"
+        ]
     }
 }
