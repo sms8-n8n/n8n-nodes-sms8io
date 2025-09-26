@@ -1,6 +1,6 @@
 {
     "node": "n8n-nodes-sms8io.Sms8Io",
-    "nodeVersion": "1.1.0",
+    "nodeVersion": "1.2.0",
     "codex": {
         "categories": ["Communication"],
         "subcategories": {
