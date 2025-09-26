@@ -1,7 +1,7 @@
 {
   "name": "n8n-nodes-sms8io",
-  "version": "1.1.0",
-  "description": "Official n8n community node for SMS8.io Android SMS Gateway",
+  "version": "1.2.0",
+  "description": "Official n8n community node for SMS8.io Android SMS Gateway - Send SMS, get message status, and manage devices",
   "keywords": [
     "n8n-community-node-package",
     "sms",
@@ -12,7 +12,9 @@
     "text-messages",
     "automation",
     "morocco",
-    "mena"
+    "mena",
+    "bulk-sms",
+    "mobile-messaging"
   ],
   "license": "MIT",
   "homepage": "https://github.com/sms8-n8n/n8n-nodes-sms8io",
@@ -37,6 +39,7 @@
     "dev": "tsc --watch",
     "lint": "eslint nodes credentials --ext .ts",
     "format": "prettier --write nodes credentials",
+    "test": "echo \"No tests yet\" && exit 0",
     "prepublishOnly": "npm run build && npm run lint"
   },
   "files": [
@@ -52,13 +55,13 @@
     ]
   },
   "devDependencies": {
-    "@types/node": "^18.16.1",
-    "@typescript-eslint/parser": "^5.45.0",
-    "eslint": "^8.45.0",
+    "@types/node": "^18.19.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.55.0",
     "gulp": "^4.0.2",
     "n8n-workflow": "^1.0.0",
-    "prettier": "^2.8.8",
-    "typescript": "^5.1.6"
+    "prettier": "^3.1.0",
+    "typescript": "^5.3.0"
   },
   "peerDependencies": {
     "n8n-workflow": "*"
