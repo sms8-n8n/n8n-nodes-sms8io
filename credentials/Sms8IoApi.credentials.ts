@@ -20,23 +20,14 @@ export class Sms8IoApi implements ICredentialType {
             },
             default: '',
             placeholder: 'Enter your SMS8.io API key',
-            description: 'Get your API key from SMS8.io dashboard at <a href="https://sms8.io/dashboard" target="_blank">sms8.io/dashboard</a>',
+            description: 'Get your API key from SMS8.io dashboard',
             required: true,
-        },
-        {
-            displayName: 'Base URL',
-            name: 'baseUrl',
-            type: 'string',
-            default: 'https://app.sms8.io',
-            description: 'Base URL for SMS8.io API (leave default unless instructed otherwise)',
-            required: false,
         },
     ];
 
-    // Test the connection
     test: ICredentialTestRequest = {
         request: {
-            baseURL: '={{$credentials.baseUrl || "https://app.sms8.io"}}',
+            baseURL: 'https://app.sms8.io',
             url: '/services/get-devices.php',
             method: 'GET',
             qs: {
