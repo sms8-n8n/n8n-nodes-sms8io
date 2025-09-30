@@ -98,9 +98,9 @@ export class Sms8Io implements INodeType {
                 },
                 default: '',
                 placeholder: '+212661234567 or {{ $json.phone }}',
-                description: 'Phone number to send SMS to (international format recommended)',
+                description: 'Phone number to send SMS to - any format accepted',
                 required: true,
-                hint: 'Use international format like +212661234567',
+                hint: 'Enter phone number in any format - validation is handled by SMS8',
             },
             {
                 displayName: 'Message Text',
@@ -118,7 +118,7 @@ export class Sms8Io implements INodeType {
                 placeholder: 'Hello {{ $json.name }}, your order is ready!',
                 description: 'SMS message content (supports n8n expressions)',
                 required: true,
-                hint: 'Maximum 160 characters for single SMS',
+                hint: 'Messages over 160 characters will be sent as multiple SMS',
             },
             {
                 displayName: 'Device ID',
@@ -217,15 +217,33 @@ export class Sms8Io implements INodeType {
                         default: false,
                         description: 'Whether to send message with high priority',
                     },
+                    {
+                        displayName: 'Retry Attempts',
+                        name: 'retryAttempts',
+                        type: 'number',
+                        default: 2,
+                        description: 'Number of retry attempts if sending fails (0-5)',
+                        typeOptions: {
+                            minValue: 0,
+                            maxValue: 5,
+                        },
+                    },
                 ],
             },
         ],
     };
 
     /**
-     * Clean and validate phone number (international support)
+     * Helper function to sleep/delay execution
      */
-    private cleanAndValidatePhoneNumber(phone: string): string {
+    private async sleep(ms: number): Promise<void> {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    /**
+     * Clean phone number - minimal processing, let SMS8 handle validation
+     */
+    private cleanPhoneNumber(phone: string): string {
         if (!phone) {
             throw new NodeOperationError(
                 this.getNode(),
@@ -233,37 +251,8 @@ export class Sms8Io implements INodeType {
             );
         }
 
-        // Remove spaces, dashes, parentheses, but keep +
-        let cleanPhone = phone.replace(/[\s\-\(\)\.]/g, '');
-        
-        // Convert 00 to +
-        if (cleanPhone.startsWith('00')) {
-            cleanPhone = '+' + cleanPhone.substring(2);
-        }
-
-        // Check basic length (7-15 digits after country code)
-        const digitsOnly = cleanPhone.replace(/^\+/, '');
-        if (digitsOnly.length < 7 || digitsOnly.length > 15) {
-            throw new NodeOperationError(
-                this.getNode(),
-                `Invalid phone number length. Expected 7-15 digits, got ${digitsOnly.length}: ${phone}`
-            );
-        }
-
-        // Check that all characters are digits (except + at the beginning)
-        if (!/^\+?[0-9]+$/.test(cleanPhone)) {
-            throw new NodeOperationError(
-                this.getNode(),
-                `Invalid phone number format. Only digits and + allowed: ${phone}`
-            );
-        }
-
-        // Add + if missing and number looks international
-        if (!cleanPhone.startsWith('+') && digitsOnly.length >= 10) {
-            cleanPhone = '+' + cleanPhone;
-        }
-
-        return cleanPhone;
+        // Just trim whitespace, keep everything else
+        return phone.trim();
     }
 
     async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
@@ -291,20 +280,55 @@ export class Sms8Io implements INodeType {
                         );
                     }
 
-                    const cleanPhone = this.cleanAndValidatePhoneNumber(phoneNumber);
+                    // Minimal cleaning - no validation
+                    const cleanPhone = this.cleanPhoneNumber(phoneNumber);
                     const deviceInfo = `["${deviceId}|${simSlot}"]`;
-                    const url = `${baseUrl}/services/send.php?key=${apiKey}&number=${cleanPhone}&message=${encodeURIComponent(message)}&devices=${encodeURIComponent(deviceInfo)}&type=sms&prioritize=${additionalFields.prioritize ? 1 : 0}`;
+                    const retryAttempts = additionalFields.retryAttempts !== undefined 
+                        ? additionalFields.retryAttempts 
+                        : 2;
 
-                    const response: SMS8ApiResponse = await this.helpers.request({
-                        method: 'GET',
-                        url: url,
-                        json: true,
-                    });
+                    // Add warning for long messages
+                    const messageLength = message.length;
+                    const smsCount = Math.ceil(messageLength / 160);
+                    const messageLengthWarning = messageLength > 160 
+                        ? `Message is ${messageLength} characters (${smsCount} SMS segments)` 
+                        : '';
 
-                    if (!response.success) {
+                    const url = `${baseUrl}/services/send.php?key=${apiKey}&number=${encodeURIComponent(cleanPhone)}&message=${encodeURIComponent(message)}&devices=${encodeURIComponent(deviceInfo)}&type=sms&prioritize=${additionalFields.prioritize ? 1 : 0}`;
+
+                    let response: SMS8ApiResponse | null = null;
+                    let lastError: Error | null = null;
+                    let attempt = 0;
+
+                    // Retry logic
+                    while (attempt <= retryAttempts) {
+                        try {
+                            response = await this.helpers.request({
+                                method: 'GET',
+                                url: url,
+                                json: true,
+                            });
+
+                            if (response.success) {
+                                break; // Success, exit retry loop
+                            } else {
+                                lastError = new Error(response.error?.message || 'Unknown error');
+                            }
+                        } catch (error) {
+                            lastError = error as Error;
+                        }
+
+                        attempt++;
+                        if (attempt <= retryAttempts) {
+                            // Wait before retrying (exponential backoff)
+                            await this.sleep(1000 * attempt);
+                        }
+                    }
+
+                    if (!response || !response.success) {
                         throw new NodeOperationError(
                             this.getNode(),
-                            `SMS sending failed: ${response.error?.message || 'Unknown error'}`
+                            `SMS sending failed after ${attempt} attempts: ${lastError?.message || 'Unknown error'}`
                         );
                     }
 
@@ -317,10 +341,14 @@ export class Sms8Io implements INodeType {
                             messageId: messageData?.ID || null,
                             phoneNumber: cleanPhone,
                             message: message,
+                            messageLength: messageLength,
+                            smsSegments: smsCount,
+                            messageLengthWarning: messageLengthWarning,
                             deviceId: deviceId,
                             simSlot: parseInt(simSlot),
                             status: messageData?.status || 'Pending',
                             sentDate: messageData?.sentDate || new Date().toISOString(),
+                            retryAttempts: attempt,
                             response: response
                         },
                     });
