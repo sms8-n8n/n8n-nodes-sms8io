@@ -35,12 +35,13 @@
   },
   "main": "index.js",
   "scripts": {
-    "build": "echo 'Build completed'",
-    "dev": "echo 'Development mode'",
-    "lint": "echo 'Linting completed'",
-    "format": "echo 'Formatting completed'",
-    "test": "echo 'Tests completed'",
-    "prepublishOnly": "echo 'Ready to publish'"
+    "build": "tsc && npm run copy-icons",
+    "copy-icons": "copyfiles -u 1 \"nodes/**/*.svg\" \"credentials/**/*.svg\" dist/",
+    "dev": "tsc --watch",
+    "lint": "eslint nodes credentials --ext .ts",
+    "format": "prettier --write \"**/*.ts\"",
+    "test": "echo 'Tests to be implemented'",
+    "prepublishOnly": "npm run build"
   },
   "files": [
     "dist",
@@ -56,6 +57,16 @@
     "nodes": [
       "nodes/Sms8Io/Sms8Io.node.js"
     ]
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "copyfiles": "^2.4.1",
+    "eslint": "^8.0.0",
+    "gulp": "^4.0.2",
+    "prettier": "^2.8.0",
+    "typescript": "^4.9.0"
   },
   "peerDependencies": {
     "n8n-workflow": "*"
