@@ -1,0 +1,19 @@
+# Source files
+nodes/**/*.ts
+credentials/**/*.ts
+*.ts
+tsconfig.json
+gulpfile.js
+
+# Test files
+**/*.test.ts
+**/*.test.js
+
+# Development
+node_modules/
+.git/
+.vscode/
+.idea/
+
+# Documentation
+README.md
